@@ -1,0 +1,27 @@
+{
+  "name": "rdb-merger",
+  "version": "0.0.1",
+  "description": "merges contents of multiple rdb files into one",
+  "main": "merger.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/AVVS/rdb-merger.git"
+  },
+  "keywords": [
+    "redis",
+    "rdb",
+    "merge"
+  ],
+  "author": "Vitaly Aminev <v@aminev.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AVVS/rdb-merger/issues"
+  },
+  "dependencies": {
+    "async": "~0.2.9",
+    "nomnom": "~1.6.2"
+  }
+}
