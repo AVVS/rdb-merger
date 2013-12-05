@@ -1,4 +1,4 @@
-var fs = require("fs");
+var fs = require("fs")
 
 var filesFlags = "-f",
     outputFlag = "-o"
@@ -28,11 +28,15 @@ if ( inpLength === 0 )
 if ( !output )
     throw new Error("No output file specified")
 
+var rdbVersion = process.env.rdbVer || 6,
+    checksumLength = 0
+if ( rdbVersion > 4 )
+    checksumLength = 8
 
 var readStreams = input.map(function(filename, idx){
     var options = { encoding: null },
         stats = fs.statSync(filename),
-        lastByte = stats.size - 1
+        lastByte = stats.size - 1 - checksumLength
 
     if ( idx === 0 ){
         options.start = 0
@@ -70,11 +74,21 @@ var writeStreams = readStreams.map(function(handler){
 })
 
 var toBeCalled = writeStreams.length
+var SSE4CRC32 = require("sse4_crc32")
 function printReport() {
     if ( --toBeCalled > 0 )
         return
 
-    console.log("Finished merging data!")
+
+    console.log("Creating checksum")
+
+    var buff = fs.readFileSync(output, {encoding: null})
+
+    var checksum = SSE4CRC32.calculate(buff)
+
+    console.log("Appending checksum", checksum)
+    fs.appendFileSync(output, checksum, {encoding: null})
+
     process.exit(0)
 }
 
