@@ -49,11 +49,21 @@ var readStreams = input.map(function(filename, idx){
         options.end = lastByte - 1
     }
 
+    if ( idx === 0 && idx === inpLength - 1 ) {
+        options.start = 0
+        options.end = lastByte
+    }
+
     return { stream: fs.createReadStream(filename, options), length: options.end - options.start + 1 }
 })
 
 // erase old file
-fs.unlinkSync(output)
+try {
+    fs.unlinkSync(output)
+} catch(e) {
+    // could be no file, we care not
+}
+
 
 var position = 0
 var writeStreams = readStreams.map(function(handler){
@@ -77,28 +87,17 @@ var writeStreams = readStreams.map(function(handler){
 
 var toBeCalled = writeStreams.length
 var exec = require('child_process').exec,
-    child,
-    Int64 = require("node-int64")
+    child
 
 function printReport() {
     if ( --toBeCalled > 0 )
         return
 
-    //jacksum -f -a crc:16,1021,FFFF,true,true,0
-    //    a CRC with customized parameters has been used: 16 Bit, Polynomial 1021
-    //    (hex, without the leading bit), initvalue FFFF (hex), mirror neither
-    //    the input nor the output, no xor.
-    exec("jacksum -a crc:64,94C93800,FFFFFFFFFFFFFFFF,true,true,0000000000000000 -E hex -F '#CHECKSUM' -x " + output,
+    child = exec("./redis_crc64/crc64 " + output,
         function(error, stdout, stderr){
             if ( error ) throw error
 
-            //0009649b701f0991 hex of the 64 bit uint
-            var buffer = new Int64(stdout).buffer
-
-            console.log(buffer)
-
-            fs.appendFileSync(output, buffer, {encoding: null})
-
+            console.log(stdout)
             process.exit(0)
     })
 }
