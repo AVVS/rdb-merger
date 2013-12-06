@@ -95,6 +95,8 @@ function printReport() {
             //0009649b701f0991 hex of the 64 bit uint
             var buffer = new Int64(stdout).buffer
 
+            console.log(buffer)
+
             fs.appendFileSync(output, buffer, {encoding: null})
 
             process.exit(0)
