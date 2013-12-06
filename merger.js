@@ -93,7 +93,7 @@ function printReport() {
     if ( --toBeCalled > 0 )
         return
 
-    child = exec("./redis_crc64/crc64 " + output,
+    child = exec(__dirname + "/redis_crc64/crc64 " + output,
         function(error, stdout, stderr){
             if ( error ) throw error
 

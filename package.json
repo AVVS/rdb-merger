@@ -1,10 +1,10 @@
 {
   "name": "rdb-merger",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "merges contents of multiple rdb files into one",
   "main": "merger.js",
   "scripts": {
-    "postinstall": "cd redis_crc64 && make"
+    "postinstall": "cd ./redis_crc64 && make"
   },
   "repository": {
     "type": "git",
