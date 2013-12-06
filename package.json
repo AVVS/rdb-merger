@@ -23,8 +23,6 @@
   "dependencies": {
     "async": "~0.2.9",
     "nomnom": "~1.6.2",
-    "buffer-crc32": "~0.2.1",
-    "crc2json": "~0.1.2",
     "node-int64": "~0.3.0"
   }
 }
