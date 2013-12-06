@@ -52,6 +52,8 @@ var readStreams = input.map(function(filename, idx){
     return { stream: fs.createReadStream(filename, options), length: options.end - options.start + 1 }
 })
 
+// erase old file
+fs.unlinkSync(output)
 
 var position = 0
 var writeStreams = readStreams.map(function(handler){
@@ -74,21 +76,28 @@ var writeStreams = readStreams.map(function(handler){
 })
 
 var toBeCalled = writeStreams.length
-var SSE4CRC32 = require("sse4_crc32")
+var exec = require('child_process').exec,
+    child,
+    Int64 = require("node-int64")
+
 function printReport() {
     if ( --toBeCalled > 0 )
         return
 
+    //jacksum -f -a crc:16,1021,FFFF,true,true,0
+    //    a CRC with customized parameters has been used: 16 Bit, Polynomial 1021
+    //    (hex, without the leading bit), initvalue FFFF (hex), mirror neither
+    //    the input nor the output, no xor.
+    exec("jacksum -a crc:64,94C93800,FFFFFFFFFFFFFFFF,true,true,0000000000000000 -E hex -F '#CHECKSUM' -x " + output,
+        function(error, stdout, stderr){
+            if ( error ) throw error
 
-    console.log("Creating checksum")
+            //0009649b701f0991 hex of the 64 bit uint
+            var buffer = new Int64(stdout).buffer
 
-    var buff = fs.readFileSync(output, {encoding: null})
+            fs.appendFileSync(output, buffer, {encoding: null})
 
-    var checksum = SSE4CRC32.calculate(buff)
-
-    console.log("Appending checksum", checksum)
-    fs.appendFileSync(output, checksum, {encoding: null})
-
-    process.exit(0)
+            process.exit(0)
+    })
 }
 
