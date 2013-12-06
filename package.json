@@ -4,7 +4,7 @@
   "description": "merges contents of multiple rdb files into one",
   "main": "merger.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postinstall": "cd redis_crc64 && make"
   },
   "repository": {
     "type": "git",
@@ -19,10 +19,5 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/AVVS/rdb-merger/issues"
-  },
-  "dependencies": {
-    "async": "~0.2.9",
-    "nomnom": "~1.6.2",
-    "node-int64": "~0.3.0"
   }
 }
